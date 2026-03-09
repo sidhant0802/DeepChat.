@@ -608,22 +608,36 @@ async function doLogin(){
   hideAlerts();
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+
   let ok=true;
-  if(!isEmail(email)){ fieldErr('login-email-err',true); ok=false; } else fieldErr('login-email-err',false);
-  if(!password)      { fieldErr('login-pass-err',true);  ok=false; } else fieldErr('login-pass-err',false);
+  if(!isEmail(email)){ fieldErr('login-email-err',true); ok=false; } 
+  else fieldErr('login-email-err',false);
+
+  if(!password){ fieldErr('login-pass-err',true); ok=false; } 
+  else fieldErr('login-pass-err',false);
+
   if(!ok) return;
 
   setLoading('login-btn',true);
+
   try{
-    const res = await fetch('/api/auth/login',{
+
+    const res = await fetch('/api/auth?action=login',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       credentials:'include',
       body:JSON.stringify({email,password})
     });
+
     const data = await res.json();
-    if(!res.ok){ showError(data.error||'Login failed. Please try again.'); return; }
-window.location.href = "/index.html";
+
+    if(!res.ok){
+      showError(data.error || 'Login failed. Please try again.');
+      return;
+    }
+
+    window.location.href = "/index.html";
+
   } catch {
     showError('Cannot reach server. Make sure it is running.');
   } finally {
@@ -650,7 +664,7 @@ async function doSignup(){
 
   setLoading('signup-btn',true);
   try{
-    const res = await fetch('/api/auth/signup',{
+    const res = await fetch('/api/auth?action=signup',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       credentials:'include',
@@ -685,7 +699,7 @@ async function doForgot(){
 
 // ── LOGOUT — calls /api/auth/logout
 async function doLogout(){
-  try{ await fetch('/api/auth/logout',{method:'POST',credentials:'include'}); } catch{}
+  try{ await fetch('/api/auth?action=logout',{method:'POST',credentials:'include'}); } catch{}
   document.getElementById('auth-body').style.display='block';
   document.getElementById('tab-row').style.display='flex';
   document.getElementById('tab-row').style.opacity='1';
@@ -703,7 +717,7 @@ function socialLogin(provider){ showToast(provider+' login coming soon!'); }
 // ── On load: check if already logged in via cookie
 (async function checkSession(){
   try{
-    const res=await fetch('/api/auth/me',{credentials:'include'});
+    const res=await fetch('/api/auth?action=me',{credentials:'include'});
     if(res.ok){
       const {user}=await res.json();
       showUserPanel(user);
