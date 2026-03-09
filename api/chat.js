@@ -54,11 +54,10 @@
 
 
 
-
-
-
+import connectDB from "../lib/db.js";
 import { sendMessage } from "./llm.js";
 import Chat from "../models/Chat.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
 
 export default async function handler(req, res) {
 
@@ -66,18 +65,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { message } = req.body;
-
-  if (!message || message.trim() === "") {
-    return res.status(400).json({ error: "Message cannot be empty" });
-  }
-
   try {
+
+    await connectDB();
+
+    // run auth manually
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const { message } = req.body;
+
+    if (!message || message.trim() === "") {
+      return res.status(400).json({ error: "Message cannot be empty" });
+    }
 
     const cleanMessage = message.trim();
 
     await Chat.create({
-      userId: req.user.id,
+      userId: user.id,
       role: "user",
       content: cleanMessage
     });
@@ -85,7 +90,7 @@ export default async function handler(req, res) {
     const reply = await sendMessage(cleanMessage);
 
     await Chat.create({
-      userId: req.user.id,
+      userId: user.id,
       role: "assistant",
       content: reply
     });
@@ -96,5 +101,4 @@ export default async function handler(req, res) {
     console.error(err);
     return res.status(500).json({ error: "Server error" });
   }
-
 }
