@@ -52,12 +52,10 @@
 // }
 
 
-
-
-import connectDB from "../lib/db.js";
+import { connectDB } from "../lib/db.js";
 import { sendMessage } from "./llm.js";
 import Chat from "../models/Chat.js";
-import { requireAuth } from "../middleware/authMiddleware.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 export default async function handler(req, res) {
 
@@ -69,9 +67,12 @@ export default async function handler(req, res) {
 
     await connectDB();
 
-    // run auth manually
-    const user = await requireAuth(req, res);
-    if (!user) return;
+    // verify JWT
+    const user = verifyToken(req);
+
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
     const { message } = req.body;
 
@@ -81,14 +82,17 @@ export default async function handler(req, res) {
 
     const cleanMessage = message.trim();
 
+    // Save user message
     await Chat.create({
       userId: user.id,
       role: "user",
       content: cleanMessage
     });
 
+    // AI response
     const reply = await sendMessage(cleanMessage);
 
+    // Save assistant reply
     await Chat.create({
       userId: user.id,
       role: "assistant",
