@@ -51,11 +51,34 @@
 
 // }
 
-
 import { connectDB } from "../lib/db.js";
 import { sendMessage } from "./llm.js";
 import Chat from "../models/Chat.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
+
+export async function getHistory(req, res) {
+  try {
+
+    await connectDB();
+
+    const user = verifyToken(req);
+
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const history = await Chat.find({ userId: user.id })
+      .sort({ createdAt: 1 })
+      .limit(50);
+
+    return res.status(200).json({ history });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 
 export default async function handler(req, res) {
 
@@ -67,7 +90,6 @@ export default async function handler(req, res) {
 
     await connectDB();
 
-    // verify JWT
     const user = verifyToken(req);
 
     if (!user) {
@@ -82,17 +104,14 @@ export default async function handler(req, res) {
 
     const cleanMessage = message.trim();
 
-    // Save user message
     await Chat.create({
       userId: user.id,
       role: "user",
       content: cleanMessage
     });
 
-    // AI response
     const reply = await sendMessage(cleanMessage);
 
-    // Save assistant reply
     await Chat.create({
       userId: user.id,
       role: "assistant",
