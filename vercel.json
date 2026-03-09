@@ -5,9 +5,11 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "api/$1" },
-    { "src": "/", "dest": "public/index.html" },
-    { "src": "/auth", "dest": "public/auth.html" },
-    { "src": "/(.*)", "dest": "public/$1" }
+    { "src": "/api/auth",    "dest": "/api/auth.js"    },
+    { "src": "/api/chat",    "dest": "/api/chat.js"    },
+    { "src": "/api/history", "dest": "/api/history.js" },
+    { "src": "/",            "dest": "/public/index.html" },
+    { "src": "/auth",        "dest": "/public/auth.html"  },
+    { "src": "/(.*)",        "dest": "/public/$1"         }
   ]
 }
