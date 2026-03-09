@@ -274,3 +274,4 @@ async function loadHistory() {
 }
 
 loadHistory();
+fetch("/api/history")
