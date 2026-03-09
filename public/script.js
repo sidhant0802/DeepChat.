@@ -266,7 +266,6 @@ async function loadHistory() {
       }
 
     });
-
   } catch (err) {
     console.error("History load error:", err);
   }
