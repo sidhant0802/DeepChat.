@@ -229,12 +229,12 @@
 <script>
 // ════════════════════════════════════════════════
 //  SESSION GUARD
-//  Calls GET /api/auth/me — if the JWT cookie is
+//  Calls GET /api/auth?action=me — if the JWT cookie is
 //  invalid or missing, redirects to auth.html
 // ════════════════════════════════════════════════
 (async function sessionGuard() {
   try {
-    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    const res = await fetch('/api/auth?action=me', { credentials: 'include' });
     if (!res.ok) {
       window.location.replace('/auth.html');
       return;
@@ -300,11 +300,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ════════════════════════════════════════════════
-//  LOGOUT — POST /api/auth/logout  (clears JWT cookie)
+//  LOGOUT — POST /api/auth?action=logout  (clears JWT cookie)
 // ════════════════════════════════════════════════
 async function doLogout() {
   try {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    await fetch('/api/auth?action=logout', { method: 'POST', credentials: 'include' });
   } catch {}
   window.location.replace('/auth.html');
 }
