@@ -293,11 +293,8 @@ body {
       <button class="tab-btn"        onclick="switchTab('signup')" type="button">Create Account</button>
     </div>
   </div>
-
-  <!-- ── Auth Body ── -->
   <div class="card-body" id="auth-body">
 
-    <!-- Alerts -->
     <div class="alert error" id="alert-error">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span id="alert-error-msg"></span>
@@ -307,7 +304,6 @@ body {
       <span id="alert-success-msg"></span>
     </div>
 
-    <!-- ── LOGIN ── -->
     <div class="form-panel active" id="panel-login">
       <div class="form-title">Welcome back 👋</div>
       <div class="form-sub">Sign in to continue your conversation</div>
@@ -362,7 +358,6 @@ body {
       </div>
     </div>
 
-    <!-- ── SIGNUP ── -->
     <div class="form-panel" id="panel-signup">
       <div class="form-title">Create your account ✨</div>
       <div class="form-sub">Join DeepChat and start chatting with AI</div>
@@ -432,7 +427,6 @@ body {
       </div>
     </div>
 
-    <!-- ── FORGOT PASSWORD ── -->
     <div class="form-panel" id="panel-forgot">
       <button class="back-btn" onclick="switchTab('login')" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
@@ -456,9 +450,8 @@ body {
       </button>
     </div>
 
-  </div><!-- /auth-body -->
+  </div>
 
-  <!-- ── Logged-in panel ── -->
   <div class="card-body user-card-panel" id="user-panel">
     <div class="user-avatar-lg" id="user-av-lg">?</div>
     <div class="user-welcome">
@@ -490,30 +483,18 @@ body {
     <button class="logout-btn" onclick="doLogout()" type="button">Sign out</button>
   </div>
 
-</div><!-- /card -->
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Particles
-// (function(){
-//   const c=document.getElementById('particles');
-//   for(let i=0;i<18;i++){
-//     const p=document.createElement('div'); p.className='particle';
-//     const s=Math.random()*60+20;
-//     p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*20}s;opacity:${Math.random()*.4+.05};`;
-//     c.appendChild(p);
-//   }
-// })();
 
-// ── Toast
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ── Alerts
 function showError(msg){
   hideAlerts();
   document.getElementById('alert-error-msg').textContent=msg;
@@ -530,20 +511,17 @@ function hideAlerts(){
   document.getElementById('alert-success').classList.remove('show');
 }
 
-// ── Field errors
 function fieldErr(id,show){ document.getElementById(id).classList.toggle('show',show); }
 
-// ── Loading state
 function setLoading(btnId,on){
   const b=document.getElementById(btnId);
   b.classList.toggle('loading',on); b.disabled=on;
 }
 
-// ── Validators
 const isEmail    = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const isUsername = u => /^[a-zA-Z0-9_]{3,20}$/.test(u);
 
-// ── Tab switching
+
 function switchTab(tab){
   hideAlerts();
   const tabs=['login','signup'];
@@ -558,7 +536,6 @@ function switchTab(tab){
   tabRow.style.pointerEvents = tab==='forgot' ? 'none' : 'all';
 }
 
-// ── Eye toggle
 function toggleEye(id,btn){
   const inp=document.getElementById(id);
   const show=inp.type==='text';
@@ -568,7 +545,6 @@ function toggleEye(id,btn){
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
 
-// ── Password strength meter
 function checkStrength(val){
   const wrap=document.getElementById('strength-wrap');
   const fill=document.getElementById('strength-fill');
@@ -591,7 +567,6 @@ function checkStrength(val){
   label.textContent=l.text; label.style.color=l.color;
 }
 
-// ── Show logged-in panel
 function showUserPanel(user){
   document.getElementById('auth-body').style.display='none';
   document.getElementById('tab-row').style.display='none';
@@ -603,7 +578,6 @@ function showUserPanel(user){
   document.getElementById('user-email-display').textContent=user.email;
 }
 
-// ── LOGIN — calls /api/auth/login
 async function doLogin(){
   hideAlerts();
   const email    = document.getElementById('login-email').value.trim();
@@ -645,7 +619,6 @@ async function doLogin(){
   }
 }
 
-// ── SIGNUP — calls /api/auth/signup
 async function doSignup(){
   hideAlerts();
   const name     = document.getElementById('signup-name').value.trim();
@@ -681,14 +654,12 @@ async function doSignup(){
   }
 }
 
-// ── FORGOT PASSWORD
 async function doForgot(){
   const email=document.getElementById('forgot-email').value.trim();
   if(!isEmail(email)){ fieldErr('forgot-email-err',true); return; }
   fieldErr('forgot-email-err',false);
   setLoading('forgot-btn',true);
   try{
-    // Wire to your real email/reset endpoint when ready
     await new Promise(r=>setTimeout(r,900));
     showSuccess('Reset link sent! Check your inbox 📬');
     showToast('Email sent to '+email);
@@ -697,7 +668,6 @@ async function doForgot(){
   }
 }
 
-// ── LOGOUT — calls /api/auth/logout
 async function doLogout(){
   try{ await fetch('/api/auth?action=logout',{method:'POST',credentials:'include'}); } catch{}
   document.getElementById('auth-body').style.display='block';
@@ -711,10 +681,8 @@ async function doLogout(){
   showToast('Signed out successfully');
 }
 
-// ── Social (placeholder)
 function socialLogin(provider){ showToast(provider+' login coming soon!'); }
 
-// ── On load: check if already logged in via cookie
 (async function checkSession(){
   try{
     const res=await fetch('/api/auth?action=me',{credentials:'include'});
@@ -725,7 +693,6 @@ function socialLogin(provider){ showToast(provider+' login coming soon!'); }
   } catch{}
 })();
 
-// ── Enter key support
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   const active=document.querySelector('.form-panel.active');

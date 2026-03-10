@@ -7,9 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css">
 <style>
-/* ═══════════════════════════════
-   USER BADGE + DROPDOWN (auth add-on)
-═══════════════════════════════ */
 .user-badge {
   display:flex; align-items:center; gap:7px;
   background:rgba(255,255,255,0.11);
@@ -33,7 +30,6 @@
   max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
-/* dropdown */
 .user-menu-wrap { position:relative; }
 
 .user-dropdown {
@@ -85,7 +81,6 @@
 
 <div class="shell">
 
-  <!-- ═══ HEADER ═══ -->
   <header>
     <div class="hdr-left">
       <div class="bot-av">
@@ -107,7 +102,6 @@
     </div>
 
     <div class="hdr-right">
-      <!-- Clear chat -->
       <button class="hdr-btn" onclick="clearChat()" title="Clear chat">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -116,7 +110,6 @@
         </svg>
       </button>
 
-      <!-- User badge + dropdown -->
       <div class="user-menu-wrap" id="user-menu-wrap">
         <div class="user-badge" id="user-badge" >
           <div class="user-av-sm" id="hdr-av">?</div>
@@ -149,8 +142,6 @@
       </div>
     </div>
   </header>
-
-  <!-- ═══ MESSAGES ═══ -->
   <div class="msgs" id="msgs">
     <div class="date-sep">Today</div>
     <div class="row bot" style="animation-delay:.12s">
@@ -172,7 +163,6 @@
     </div>
   </div>
 
-  <!-- ═══ CHIPS ═══ -->
   <div class="chips">
     <div class="chip" onclick="useChip(this)">News</div>
     <div class="chip" onclick="useChip(this)">Pricing</div>
@@ -181,7 +171,6 @@
     <div class="chip" onclick="useChip(this)">Coding</div>
   </div>
 
-  <!-- ═══ INPUT ZONE ═══ -->
   <div class="input-zone">
     <div class="voice-bar" id="voice-bar">
       <div class="voice-waves">
@@ -218,20 +207,13 @@
     <div class="input-hint">↵ to send &nbsp;·&nbsp; Shift+↵ new line &nbsp;·&nbsp; 🎤 mic for voice</div>
   </div>
 
-</div><!-- /shell -->
+</div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ── Your original chat logic ── -->
 <script src="script.js"></script>
 
-<!-- ── Auth layer (session guard + user badge + logout) ── -->
 <script>
-// ════════════════════════════════════════════════
-//  SESSION GUARD
-//  Calls GET /api/auth?action=me — if the JWT cookie is
-//  invalid or missing, redirects to auth.html
-// ════════════════════════════════════════════════
 (async function sessionGuard() {
   try {
     const res = await fetch('/api/auth?action=me', { credentials: 'include' });
@@ -248,24 +230,18 @@
   }
 })();
 
-// ════════════════════════════════════════════════
-//  POPULATE HEADER WITH LOGGED-IN USER INFO
-// ════════════════════════════════════════════════
 function populateHeader(user) {
   const firstName = (user.name || 'User').split(' ')[0];
   const initials  = (user.name || '?')
     .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-  // Badge
   document.getElementById('hdr-av').textContent   = initials;
   document.getElementById('hdr-name').textContent = firstName;
 
-  // Dropdown head
   document.getElementById('dd-av').textContent    = initials;
   document.getElementById('dd-name').textContent  = user.name  || '—';
   document.getElementById('dd-email').textContent = user.email || '—';
 
-  // Personalize greeting bubble
   const greet = document.getElementById('greeting-bubble');
   if (greet) {
     greet.innerHTML =
@@ -274,9 +250,6 @@ function populateHeader(user) {
   }
 }
 
-// ════════════════════════════════════════════════
-//  DROPDOWN TOGGLE
-// ════════════════════════════════════════════════
 function toggleDropdown() {
   const menu = document.getElementById('user-dropdown');
   menu.classList.toggle('open');
@@ -299,9 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ════════════════════════════════════════════════
-//  LOGOUT — POST /api/auth?action=logout  (clears JWT cookie)
-// ════════════════════════════════════════════════
 async function doLogout() {
   try {
     await fetch('/api/auth?action=logout', { method: 'POST', credentials: 'include' });
@@ -309,9 +279,7 @@ async function doLogout() {
   window.location.replace('/auth.html');
 }
 
-// ════════════════════════════════════════════════
-//  PROFILE — go back to auth page
-// ════════════════════════════════════════════════
+
 function goProfile() {
   document.getElementById('user-dropdown').classList.remove('open');
   window.location.href = '/auth.html';
