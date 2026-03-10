@@ -504,3 +504,74 @@ fetch("/api/history")
 //     c.appendChild(p);
 //   }
 // })();
+
+(async function sessionGuard() {
+  try {
+    const res = await fetch('/api/auth?action=me', { credentials: 'include' });
+    if (!res.ok) {
+      window.location.replace('/auth.html');
+      return;
+    }
+    const { user } = await res.json();
+    populateHeader(user);
+  } catch (err) {
+    // Server totally unreachable (e.g. dev with no backend)
+    // Comment out the line below if you want to allow offline dev:
+    window.location.replace('/auth.html');
+  }
+})();
+
+function populateHeader(user) {
+  const firstName = (user.name || 'User').split(' ')[0];
+  const initials  = (user.name || '?')
+    .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  document.getElementById('hdr-av').textContent   = initials;
+  document.getElementById('hdr-name').textContent = firstName;
+
+  document.getElementById('dd-av').textContent    = initials;
+  document.getElementById('dd-name').textContent  = user.name  || '—';
+  document.getElementById('dd-email').textContent = user.email || '—';
+
+  const greet = document.getElementById('greeting-bubble');
+  if (greet) {
+    greet.innerHTML =
+      `Hello <strong>${firstName}</strong>! I'm <strong>DeepChat</strong>, ` +
+      `your AI assistant. How can I help you today? 👋`;
+  }
+}
+
+function toggleDropdown() {
+  const menu = document.getElementById('user-dropdown');
+  menu.classList.toggle('open');
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const badge = document.getElementById("user-badge");
+
+  if (badge) {
+    badge.addEventListener("click", toggleDropdown);
+  }
+
+  document.addEventListener("click", (e) => {
+    const wrap = document.getElementById("user-menu-wrap");
+    const menu = document.getElementById("user-dropdown");
+
+    if (wrap && !wrap.contains(e.target)) {
+      menu.classList.remove("open");
+    }
+  });
+});
+
+async function doLogout() {
+  try {
+    await fetch('/api/auth?action=logout', { method: 'POST', credentials: 'include' });
+  } catch {}
+  window.location.replace('/auth.html');
+}
+
+
+function goProfile() {
+  document.getElementById('user-dropdown').classList.remove('open');
+  window.location.href = '/auth.html';
+}
