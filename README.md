@@ -334,4 +334,4 @@ Supported browsers:
 # 👨‍💻 Author
 
 **Sidhant Nirupam**
-IIT Patna
+
