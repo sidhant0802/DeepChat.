@@ -15,7 +15,6 @@ function parseCookies(req) {
   return cookies;
 }
 
-// Serverless-friendly token verification
 export function verifyToken(req) {
 
   const cookies = parseCookies(req);
